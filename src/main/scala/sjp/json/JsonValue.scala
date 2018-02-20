@@ -2,7 +2,7 @@ package sjp.json
 
 import sjp.path.Path
 
-sealed trait JsonVal extends JsonTransformable
+sealed trait JsonVal extends Path with JsonTransformable
 
 case object JsonNull extends  JsonVal {
 
@@ -23,7 +23,7 @@ case class JsonNumber(private[json] val value: Long) extends JsonVal {
 }
 
 case class JsonString(private[json] val value: String) extends JsonVal {
-  override def toString: String = /*"\"" + value + "\""*/value
+  override def toString: String = value
 }
 
 case class JsonArray(private[json] val value: IndexedSeq[JsonVal] = Array[JsonVal]())
@@ -39,7 +39,7 @@ case class JsonArray(private[json] val value: IndexedSeq[JsonVal] = Array[JsonVa
 }
 
 case class JsonObject(private[json] val members: Map[String, JsonVal] = Map[String, JsonVal]())
-  extends Path with JsonVal
+  extends JsonVal
 {
   def fieldSet: Set[(String, JsonVal)] = members.toSet
 
