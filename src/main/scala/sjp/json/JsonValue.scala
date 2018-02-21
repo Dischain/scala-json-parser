@@ -2,28 +2,30 @@ package sjp.json
 
 import sjp.path.Path
 
-sealed trait JsonVal extends Path with JsonTransformable
+sealed trait JsonVal extends Path with JsonTransformable {
+  def stringify: String
+}
 
 case object JsonNull extends  JsonVal {
 
-override def toString: String = "\"null\""
+  def stringify: String = "\"null\""
 }
 
 sealed trait JsonBoolean extends JsonVal
 
 case object JsonTrue extends JsonBoolean {
-  override def toString: String = "true"
+  def stringify: String = "true"
 }
 case object JsonFalse extends JsonBoolean {
-  override def toString: String = "false"
+  def stringify: String = "false"
 }
 
 case class JsonNumber(private[json] val value: Long) extends JsonVal {
-  override def toString: String = value.toString
+  def stringify: String = value.toString
 }
 
 case class JsonString(private[json] val value: String) extends JsonVal {
-  override def toString: String = value
+  def stringify: String = "\"" + value + "\""
 }
 
 case class JsonArray(private[json] val value: IndexedSeq[JsonVal] = Array[JsonVal]())
@@ -35,7 +37,7 @@ case class JsonArray(private[json] val value: IndexedSeq[JsonVal] = Array[JsonVa
 
   def +:(el: JsonVal): JsonArray = JsonArray(el +: value)
 
-  override def toString: String = value.mkString(",")
+  def stringify: String = value.mkString(",")
 }
 
 case class JsonObject(private[json] val members: Map[String, JsonVal] = Map[String, JsonVal]())
@@ -54,12 +56,14 @@ case class JsonObject(private[json] val members: Map[String, JsonVal] = Map[Stri
   def +(otherField: (String, JsonVal)): JsonObject =
     JsonObject(members + otherField)
 
-  override def toString: String = members.toSeq.mkString(",")
+  def stringify: String = {
+    "{" + (keys.map(key => "\"" + key + "\":" + members.get(key).get.stringify) mkString ",") + "}"
+  }
 }
 
 object JsonObject {
   def apply(members: Seq[(String, JsonVal)]): JsonObject =
     members.foldLeft(JsonObject(Map[String, JsonObject]())) {
         (init: JsonObject, current: (String, JsonVal)) => init + current
-      }
+    }
 }

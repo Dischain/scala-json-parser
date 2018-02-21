@@ -15,13 +15,13 @@ sealed class Parser extends JavaTokenParsers {
 
   def member: Parser[(String, JsonVal)] =
     stringLiteral ~ ":" ~ value ^^ {
-      case name ~ ":" ~ value => (name, value)
+      case name ~ ":" ~ value => (name.stripPrefix("\"").stripSuffix("\""), value)
     }
 
   def value: Parser[JsonVal] = (
     obj
       | arr
-      | stringLiteral ^^ (x => JsonString(x))
+      | stringLiteral ^^ (x => JsonString(x.stripPrefix("\"").stripSuffix("\"")))
       | floatingPointNumber ^^ (x => JsonNumber(x.toLong))
       | "null"  ^^ (_ => JsonNull)
       | "true"  ^^ (_ => JsonTrue)

@@ -4,7 +4,7 @@ import sjp.conversions.{ Writable, Readable }
 import sjp.parser.Parser
 
 object Json {
-  def stringify(value: JsonVal): String = value.toString
+  def stringify(value: JsonVal): String = value.stringify
 
   def parse(string: String): JsonVal = Parser.parse(string)
 
