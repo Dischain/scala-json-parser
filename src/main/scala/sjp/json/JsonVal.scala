@@ -8,7 +8,7 @@ sealed trait JsonVal extends Path with JsonTransformable {
 
 case object JsonNull extends  JsonVal {
 
-  def stringify: String = "\"null\""
+  def stringify: String = "null"
 }
 
 sealed trait JsonBoolean extends JsonVal
@@ -28,16 +28,16 @@ case class JsonString(private[json] val value: String) extends JsonVal {
   def stringify: String = "\"" + value + "\""
 }
 
-case class JsonArray(private[json] val value: IndexedSeq[JsonVal] = Array[JsonVal]())
+case class JsonArray(private[json] val elements: IndexedSeq[JsonVal] = Array[JsonVal]())
   extends JsonVal
 {
-  def ++(other: JsonArray): JsonArray = JsonArray(value ++ other.value)
+  def ++(other: JsonArray): JsonArray = JsonArray(elements ++ other.elements)
 
-  def :+(el: JsonVal): JsonArray = JsonArray(value :+ el)
+  def :+(el: JsonVal): JsonArray = JsonArray(elements :+ el)
 
-  def +:(el: JsonVal): JsonArray = JsonArray(el +: value)
+  def +:(el: JsonVal): JsonArray = JsonArray(el +: elements)
 
-  def stringify: String = value.mkString(",")
+  def stringify: String = "[" + (elements.map(el => el.stringify) mkString ",") + "]"
 }
 
 case class JsonObject(private[json] val members: Map[String, JsonVal] = Map[String, JsonVal]())
