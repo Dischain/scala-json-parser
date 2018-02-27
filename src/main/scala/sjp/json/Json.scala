@@ -43,7 +43,7 @@ object Json {
     * @tparam T the type of the value to be deserialized from `JsonVal`
     * @return optional of expected type `T` representing required instance
     */
-  def fromJson[T](value: JsonVal)(implicit jr: Readable[T]): Option[T] =
+  def fromJson[T](value: JsonVal)(implicit jr: Readable[T]): Either[JsonError, T] =
     jr.read(value)
 
   /**

@@ -143,14 +143,14 @@ class JsonSpec extends FunSpec {
         })
 
       it("should convert JsonVal to `Some` object") {
-        assert(Option(Person("John", Address("21rst", "Noname"))) ==
+        assert(Right(Person("John", Address("21rst", "Noname"))) ==
           Json.fromJson[Person](JsonObject(Map("name" -> JsonString("John"),
           "address" ->
             JsonObject(Map("street" -> JsonString("21rst"), "city" -> JsonString("Noname")))))))
       }
 
       it("should convert JsonVal which contains an array of values to `Some` object") {
-        assert(Option(ArrayBased(IndexedSeq[String]("a", "b"))) ==
+        assert(Right(ArrayBased(IndexedSeq[String]("a", "b"))) ==
           Json.fromJson[ArrayBased](JsonObject(Map("arr" ->
             JsonArray(IndexedSeq(JsonString("a"), JsonString("b")))))))
       }

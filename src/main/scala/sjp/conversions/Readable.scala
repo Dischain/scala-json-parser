@@ -1,6 +1,6 @@
 package sjp.conversions
 
-import sjp.json.JsonVal
+import sjp.json.{JsonError, JsonVal}
 
 /**
   * Decodes JsonVal instance into a optional value. Should be provided
@@ -11,7 +11,7 @@ import sjp.json.JsonVal
   * case class Address(street: String, city: String)
   *
   * implicit val addressRead = new Readable[Address] {
-  *   def read(addr: JsonVal): Option[Person] = {
+  *   def read(addr: JsonVal): Either[JsonError, Person] = {
   *     for {
   *       street <- addr </> "street"
   *       city <- addr </> "city"
@@ -20,7 +20,7 @@ import sjp.json.JsonVal
   * }
   *
   * implicit val personRead = new Readable[Person] {
-  *   def read(person: JsonVal): Option[Person] = {
+  *   def read(person: JsonVal): Either[JsonError, Person] = {
   *     for {
   *       name <- person </> "name"
   *       address <- person </> "address"
@@ -35,5 +35,5 @@ trait Readable[A] {
     * @param jsonVal json value to be decoded
     * @return optional value to be decoded
     */
-  def read(jsonVal: JsonVal): Option[A]
+  def read(jsonVal: JsonVal): Either[JsonError, A]
 }
