@@ -20,7 +20,7 @@ class Path { self: JsonVal =>
     case JsonObject(fields) => try {
       Right(fields(field))
     } catch {
-      case e: NoSuchElementException => Left(JsonFieldUndefinedError)
+      case e: NoSuchElementException => Left(JsonFieldUndefinedError(field))
     }
     case _ => Left(IncompatibleOperationError)
   }
@@ -37,7 +37,8 @@ class Path { self: JsonVal =>
     */
   def <^>(index: Int): Either[JsonError, JsonVal] = this match {
     case JsonArray(values) =>
-      if (index < 0 || index > values.length - 1) Left(JsonArrayIndexOutOfBoundsError)
+      if (index < 0 || index > values.length - 1)
+        Left(JsonArrayIndexOutOfBoundsError(index, values.length))
       else Right(values(index))
     case _ => Left(IncompatibleOperationError)
   }

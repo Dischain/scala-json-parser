@@ -31,7 +31,7 @@ class JsonValSpec extends FunSpec {
       it("should return `Either.Left` containing `JsonFieldUndefinedError` when looking up " +
         "non-existing field") {
         addressJsonVal </> "undef" match {
-          case Left(JsonFieldUndefinedError) => assert(true)
+          case Left(JsonFieldUndefinedError(field)) => assert(field == "undef")
         }
       }
 
@@ -39,7 +39,7 @@ class JsonValSpec extends FunSpec {
         "on non-`JsonObject` instance of `JsonVal`") {
         JsonArray(IndexedSeq("1", "2") map { JsonString }) </> "some" match {
           case Right(v) => println(v)
-          case Left(e) => println(e); assert(true)
+          case Left(e) => assert(true)
         }
       }
     }
@@ -57,7 +57,7 @@ class JsonValSpec extends FunSpec {
         "called with non-existing index") {
         (arrayBased </> "arr") map {
           case fieldVal: JsonVal => fieldVal <^> 2 match {
-            case Left(JsonArrayIndexOutOfBoundsError) => assert(true)
+            case Left(JsonArrayIndexOutOfBoundsError(index, _)) => assert(index == 2)
           }
         }
       }
