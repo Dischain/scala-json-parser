@@ -3,7 +3,8 @@ package sjp.conversions
 import sjp.json.{JsonError, JsonVal}
 
 /**
-  * Decodes JsonVal instance into a optional value. Should be provided
+  * Decodes JsonVal instance into either a value of type `T`
+  * or `JsonError`. Should be provided
   * as implicit value, as shown in the example below.
   *
   * {{{
@@ -31,9 +32,10 @@ import sjp.json.{JsonError, JsonVal}
   */
 trait Readable[A] {
   /**
+    * Convert from `JsonVal` to an instance of specified type `T`
     *
     * @param jsonVal json value to be decoded
-    * @return optional value to be decoded
+    * @return either [[sjp.json.JsonError]] or value of type `T` to be decoded
     */
   def read(jsonVal: JsonVal): Either[JsonError, A]
 }
