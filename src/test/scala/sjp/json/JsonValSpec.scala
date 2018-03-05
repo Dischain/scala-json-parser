@@ -1,7 +1,7 @@
 package sjp.json
 
 import org.scalatest.FunSpec
-import sjp.conversions.Writable
+import sjp.conversions.{Readable, Writable}
 
 class JsonValSpec extends FunSpec {
   case class Address(street: String, city: String)
@@ -16,6 +16,12 @@ class JsonValSpec extends FunSpec {
     Json.obj(
       "arr" -> JsonArray(arrayBased.arr map { JsonString })
     )
+
+  implicit val addressRead: Readable[Address] = (addr: JsonVal) =>
+    for {
+      street <- addr </> "street"
+      city <- addr </> "city"
+    } yield Address(street.asString, city.asString)
 
   val addressJsonVal: JsonVal = Json.toJson(Address("21rst", "Noname"))
   val arrayBased: JsonVal = Json.toJson(ArrayBased(IndexedSeq("1", "2")))
@@ -67,6 +73,31 @@ class JsonValSpec extends FunSpec {
         addressJsonVal <^> 1 match {
           case Left(IncompatibleOperationError) => assert(true)
         }
+      }
+    }
+
+    describe("when converted to specific type") {
+      it("should return an instance of an object of specified type") {
+        assert(addressJsonVal.as[Address] == Address("21rst", "Noname"))
+      }
+
+      it("should throw `JsonError` in case of wrong implicit `Readable` specified") {
+        case class AddressWrong(street: String, city: String)
+
+        implicit val addressWrongWritable: Writable[AddressWrong] = (addr: AddressWrong) =>
+          Json.obj(
+            "street" -> JsonString(addr.street),
+            "city" -> JsonString(addr.city))
+
+        implicit val addressWrongRead: Readable[AddressWrong] = (addr: JsonVal) =>
+          for {
+            street <- addr </> "streetWrong"
+            city <- addr </> "city"
+          } yield AddressWrong(street.asString, city.asString)
+
+        val addressWrongJsonVal: JsonVal = Json.toJson(AddressWrong("21rst", "Noname"))
+
+        assertThrows[JsonFieldUndefinedError](addressWrongJsonVal.as[AddressWrong])
       }
     }
   }
