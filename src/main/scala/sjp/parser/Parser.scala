@@ -30,9 +30,17 @@ sealed class Parser extends JavaTokenParsers {
 }
 
 object Parser extends Parser {
+  /**
+    * Parse json-string and return a [[sjp.json.JsonVal]] or throw a
+    * [[sjp.parser.ParseError]]
+    *
+    * @param string json-string
+    * @throws sjp.parser.ParseError parse error
+    * @return
+    */
   def parse(string: String): JsonVal = parseAll(value, string) match {
     case Success(res, _) => res
-    case Error(msg, _) => throw new Exception(msg)
-    case Failure(msg, _) => throw new Exception(msg)
+    case Error(msg, _) => throw ParseError(msg)
+    case Failure(msg, _) => throw ParseError(msg)
   }
 }

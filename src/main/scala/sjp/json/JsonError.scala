@@ -3,7 +3,7 @@ package sjp.json
 /**
   * Json errors representation
   */
-sealed trait JsonError extends Throwable{
+sealed trait JsonError extends Throwable {
   def msg: String
 }
 
